@@ -28,4 +28,8 @@ EOF
   echo "[oya] Initialized reminders.json"
 fi
 
+# Hermes drops to UID 10000 (hermes user). Everything we created as root
+# must be owned by that user or Hermes can't write to it.
+chown -R 10000:10000 "$HERMES_DATA"
+
 exec /opt/hermes/docker/entrypoint.sh "$@"
