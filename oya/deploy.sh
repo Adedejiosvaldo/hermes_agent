@@ -46,7 +46,7 @@ run_setup hermes config set stt.provider local
 
 echo ""
 echo "Step 5/5 — Schedule nightly review"
-run_setup hermes cron add "0 0 22 * * *" --skill daily-review --message "run daily review"
+run_setup hermes cron add "0 0 22 * * *" "run daily review" --skill daily-review
 
 echo ""
 echo "=== Optional extras (skip with Ctrl+C, configure later) ==="
