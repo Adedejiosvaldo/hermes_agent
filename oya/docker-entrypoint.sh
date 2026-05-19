@@ -28,4 +28,4 @@ EOF
   echo "[oya] Initialized reminders.json"
 fi
 
-exec "$@"
+exec /opt/hermes/docker/entrypoint.sh "$@"

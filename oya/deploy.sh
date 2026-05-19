@@ -18,7 +18,7 @@ echo "=== First-run config (interactive — runs inside container, saves to volu
 echo ""
 
 run_setup() {
-  docker compose run --rm --entrypoint "" oya "$@"
+  docker compose run --rm oya "$@"
 }
 
 echo "Step 1/5 — LLM provider"
