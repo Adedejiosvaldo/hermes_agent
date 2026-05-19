@@ -42,7 +42,7 @@ reminder_id: rem_YYYYMMDD_HHMMSS_NNN step: 1
 ## Common setup (all steps)
 
 1. Parse `reminder_id` from context. Parse `step` — default to `1` if absent.
-2. Read `~/.hermes/data/oya/reminders.json`.
+2. Read `/opt/data/oya/reminders.json`.
 3. Find reminder where `id == reminder_id`.
 4. If not found: log `"[fire-reminder] ERROR: reminder <id> not found"`. Stop.
 5. If `status != "active"`: stop silently.

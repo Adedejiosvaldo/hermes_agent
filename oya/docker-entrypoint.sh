@@ -5,7 +5,7 @@ set -euo pipefail
 
 HERMES_DATA="${HERMES_HOME:-/opt/data}"
 SKILLS_DIR="$HERMES_DATA/skills/oya"
-DATA_DIR="$HERMES_DATA/data/oya"
+DATA_DIR="$HERMES_DATA/oya"
 
 mkdir -p "$SKILLS_DIR" "$DATA_DIR"
 
@@ -27,6 +27,11 @@ if [ ! -f "$DATA_DIR/reminders.json" ]; then
 EOF
   echo "[oya] Initialized reminders.json"
 fi
+
+# Symlink /opt/hermes/oya → /opt/data/oya so the agent finds the file
+# whether it resolves ~ as /opt/hermes or /opt/data.
+mkdir -p /opt/hermes
+ln -sfn "$DATA_DIR" /opt/hermes/oya
 
 # Hermes drops to UID 10000 (hermes user). Everything we created as root
 # must be owned by that user or Hermes can't write to it.

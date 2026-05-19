@@ -6,7 +6,7 @@ description: >
   me", "nag me", "every day", "every weekday", "tomorrow", "next [day]", "in
   [N] hours/days", "schedule", "don't let me forget", "ping me". Handles Pidgin
   English phrasings ("abeg remind me say make I…"). Writes to
-  ~/.hermes/data/oya/reminders.json and creates a cron job via the cronjob tool.
+  /opt/data/oya/reminders.json and creates a cron job via the cronjob tool.
 version: 0.1.0
 metadata:
   hermes:
@@ -153,7 +153,7 @@ If user requests changes instead, loop back to Step 5 with the corrected fields.
 
 On confirmation:
 
-1. **Read** `~/.hermes/data/oya/reminders.json`. If file missing, create it:
+1. **Read** `/opt/data/oya/reminders.json`. If file missing, create it:
    ```json
    {"reminders": [], "user_model": {"patterns": [], "preferences": {}, "last_reviewed": null}}
    ```

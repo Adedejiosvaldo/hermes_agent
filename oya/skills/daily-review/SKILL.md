@@ -34,7 +34,7 @@ once during setup and run indefinitely.
 
 ### Step 1 — Load today's data
 
-1. Read `~/.hermes/data/oya/reminders.json`.
+1. Read `/opt/data/oya/reminders.json`.
 2. Determine today's date in `oya.user.timezone`.
 3. Collect all history entries where `fired_at` date == today. Include entries
    from all reminders (active, completed, paused).

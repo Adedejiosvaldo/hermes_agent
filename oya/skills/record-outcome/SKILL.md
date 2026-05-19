@@ -4,7 +4,7 @@ description: >
   Record user's response to a fired reminder. Handles: ✅ done, ❌ skip,
   "snooze Nh/Nm", "cancel", "done". Cancels pending escalation cron jobs.
   Triggers on any reply that looks like an acknowledgement of a reminder.
-  Writes to ~/.hermes/data/oya/reminders.json.
+  Writes to /opt/data/oya/reminders.json.
 version: 0.1.0
 metadata:
   hermes:
@@ -31,7 +31,7 @@ If ambiguous, check whether there is an active (unacked) reminder in
 
 ### Step 1 — Find the active reminder
 
-1. Read `~/.hermes/data/oya/reminders.json`.
+1. Read `/opt/data/oya/reminders.json`.
 2. Find reminders where `status == "active"` AND the most recent history entry
    has `ack == null` (i.e., a fired-but-unacknowledged reminder).
 3. If exactly one such reminder exists: use it.
