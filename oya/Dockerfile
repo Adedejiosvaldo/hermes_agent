@@ -14,4 +14,4 @@ VOLUME ["/opt/data"]
 EXPOSE 8642
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["hermes", "gateway", "start"]
+CMD ["hermes", "gateway", "run"]
