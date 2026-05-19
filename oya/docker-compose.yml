@@ -1,0 +1,23 @@
+services:
+  oya:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - oya-data:/opt/data
+      # Persist the faster-whisper model so it only downloads once.
+      - oya-whisper:/root/.cache/huggingface
+    environment:
+      - HERMES_HOME=/opt/data
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    # API server is off by default. Uncomment only if you need remote access,
+    # and bind to 127.0.0.1 so it stays off the public internet.
+    # ports:
+    #   - "127.0.0.1:8642:8642"
+    # environment extras for API server:
+    #   - API_SERVER_ENABLED=true
+    #   - API_SERVER_HOST=0.0.0.0
+    #   - API_SERVER_KEY=changeme_min8chars
+
+volumes:
+  oya-data:
+  oya-whisper:
