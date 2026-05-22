@@ -71,9 +71,10 @@ just reply warmly as Oya; no mode needed.
 - **`what`** — the action, scaffolding stripped ("remind me tomorrow to call
   mom" → `call mom`). Handle Pidgin ("abeg remind me say make I…").
 - **`when`** — two forms:
-  - *Relative* ("in N minutes/hours/days") → keep as a relative delay token
-    (`5m`, `2h`, `1d`). **Never** convert to a clock time — Hermes resolves it
-    off the system clock at schedule time.
+  - *Relative* ("in N minutes/hours/days") → a **bare duration token**:
+    `2m`, `30m`, `2h`, `1d`. Convert the phrase — "in 2 minutes" becomes
+    `2m`, "in 3 hours" becomes `3h`. Never keep the words; the `cronjob` tool
+    rejects natural language.
   - *Absolute* ("tomorrow 9am", "Friday 3pm") → ISO 8601, resolved against NOW
     in `oya.user.timezone`.
 - **`recurrence`** — `once | daily | weekday | weekend | weekly | monthly | custom`.
@@ -95,10 +96,13 @@ Send a plain-language confirmation and wait for ✅ / "yes" / "go":
 > "Got it: [frequency] at [time] — **'[what]'**. Tier [N]. Reply ✅ to confirm."
 
 ### A5. Schedule on confirmation
-1. **Schedule spec:**
-   - one-shot relative → the delay token (`5m`, `2h`, `1d`).
-   - one-shot absolute → ISO timestamp.
-   - recurring → **5-field** cron (`min hour dom month dow` — no seconds).
+1. **Schedule spec** — the exact string the `cronjob` tool accepts; nothing
+   else is valid. **Never pass a natural-language phrase** ("in 2 minutes",
+   "tomorrow 9am"):
+   - one-shot relative → a bare duration: `2m`, `30m`, `2h`, `1d`.
+   - one-shot absolute → an ISO 8601 timestamp: `2026-05-23T09:00:00`.
+   - recurring → an interval (`every 2h`) or a **5-field** cron
+     (`0 9 * * *` — no seconds).
 2. Build the reminder object (shape in `SCHEMA.md`) and append to `reminders`
    in `/opt/data/oya/reminders.json`:
    `id` (`rem_YYYYMMDD_HHMMSS_NNN`), `created_at`, `created_via: "telegram"`,
@@ -152,7 +156,7 @@ the occurrence's `escalation_cron_id` job.
 - **DEFERRED** — if `reschedule.count >= 3`: do not move again — confront
   gently (three moves is avoidance), leave the loop `pending`, stop. Else:
   occurrence `state: "deferred"`, `reschedule.to: <new time>`; create a
-  one-shot `fire-reminder` cron job at the new time (relative delay or ISO),
+  one-shot `fire-reminder` cron job at the new time (a bare duration like `2h`, or an ISO timestamp — never prose),
   context `reminder_id: <id> defer_count: <reschedule.count + 1>`; streak
   unchanged.
 - **EXCUSED** — occurrence `state: "excused"`, `reason`; streak unchanged.
