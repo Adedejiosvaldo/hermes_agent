@@ -66,7 +66,7 @@ Cron-triggered only, once nightly (~21:00 user time). Never user-invoked.
 **4. Open loops** — take the still-open list from `streak-guard`. Present it,
 then invite action: the user may close each loop, or move them. State the
 shortcut: *reply "push to tomorrow"* to defer them all, or name the ones to
-move. (Replies are handled by `record-outcome`.)
+move. (Replies are handled by the `oya` skill.)
 
 **5. Tomorrow preview** — list reminders that will fire tomorrow (recurring
 ones whose pattern matches tomorrow; one-shots dated tomorrow). If none, say

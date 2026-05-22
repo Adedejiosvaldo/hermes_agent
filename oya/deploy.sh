@@ -46,6 +46,21 @@ run_setup hermes config set oya.user.telegram_id "$TELEGRAM_ID"
 # Add to Telegram allowlist so the gateway doesn't block you
 run_setup sh -c "echo 'TELEGRAM_ALLOWED_USERS=$TELEGRAM_ID' >> /opt/data/.env"
 
+# Bind the 'oya' skill to the Telegram DM. Hermes skills do NOT auto-trigger on
+# message content — without this binding the bot ignores the oya skill, and
+# plain "remind me…" / "done" messages do nothing useful.
+echo ""
+echo "  IMPORTANT — bind the 'oya' skill to your chat."
+echo "  Edit config.yaml and add under platforms.telegram.extra:"
+echo ""
+echo "      dm_topics:"
+echo "        - chat_id: $TELEGRAM_ID"
+echo "          topics:"
+echo "            - name: Oya"
+echo "              skill: oya"
+echo ""
+read -r -p "  Press Enter once that block is saved (see DEPLOY.md step 4)... " _
+
 echo ""
 echo "Step 4/5 — Voice transcription (local, free)"
 run_setup hermes config set stt.provider local

@@ -160,8 +160,8 @@ we'll pick it up. Tell me when you can."*
 `escalation_cron_id`. Leave `state: "pending"` and leave the `open_loops`
 entry in place. Write back.
 
-The occurrence stays in `open_loops`. The user closes it via `record-outcome`;
-the morning sweep (`morning-check`, P2) resurfaces it. A miss is only ever
+The occurrence stays in `open_loops`. The user closes it via the `oya` skill;
+the morning sweep (`morning-check`) resurfaces it. A miss is only ever
 recorded by an explicit user action — never here.
 
 Stop.
@@ -206,7 +206,7 @@ without buttons. Typed text and voice notes are always valid replies.
 | timeout | occurrence `escalation_step: "timeout"`; clear `escalation_cron_id` | No |
 
 This skill never sets occurrence `state` to anything but `pending`.
-`record-outcome` owns every resolution.
+The `oya` skill (mode B) owns every resolution.
 
 ## Output hygiene
 

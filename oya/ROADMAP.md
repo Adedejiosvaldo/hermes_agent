@@ -249,23 +249,30 @@ scattered pings. New skill `evening-review` (absorbs `daily-review`).
 
 ## 8. Skills
 
-**Existing:** `parse-reminder`, `fire-reminder`, `record-outcome`. The old
-`daily-review` is superseded by `evening-review` — its cron is dropped; its
-skill files can be removed.
+**Skill activation — the key constraint.** Hermes skills do **not**
+auto-trigger on message content (verified). Two activation paths only: cron
+jobs attach skills explicitly (`--skill`), and a Telegram topic can pre-load
+**one** skill via `platforms.telegram.extra.dm_topics`. So all user-facing
+logic is **one** skill, `oya`, bound to the chat.
 
-**New:**
+**User-facing skill:**
 | Skill | Role | Status |
 |---|---|---|
-| `streak-guard` | nightly sweep of open loops, re-ping stale ones | ✅ |
+| `oya` | the one chat skill — routes reminder / resolve / plan / stats | ✅ |
+
+**Cron skills** (attached to cron jobs):
+| Skill | Role | Status |
+|---|---|---|
+| `fire-reminder` | open a loop + contract ping + follow-ups | ✅ |
+| `streak-guard` | nightly open-loop sweep, carry-forward, auto-miss valve | ✅ |
 | `morning-check` | resurface unclosed loops from earlier days | ✅ |
-| `oya-stats` | on-demand stats view | ✅ |
-| `plan-intake` | bulk todo-list intake | ✅ |
 | `evening-review` | nightly ritual — co-loads `streak-guard` + `weather-brief` | ✅ |
 | `weather-brief` | next-day forecast (Open-Meteo, no key) | ✅ |
 
-XP / streak / level math and milestone fanfare are **not** separate skills —
-the math lives in `GAMIFICATION.md` and is applied by `record-outcome` (the
-sole writer of completion state); the fanfare is part of its reply.
+`parse-reminder`, `record-outcome`, `plan-intake`, `oya-stats` are **merged
+into `oya`** (its four modes) — their dirs stay in `skills/` for reference,
+superseded. `daily-review` is superseded by `evening-review`. XP/streak math
+(`GAMIFICATION.md`) and milestone fanfare live inside `oya` mode B.
 
 ---
 

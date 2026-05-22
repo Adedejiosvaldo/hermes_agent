@@ -33,7 +33,28 @@ docker compose run --rm oya hermes config set telegram.reactions true
 docker compose run --rm oya hermes config set oya.user.location "Lagos"
 ```
 
-**4. Reset cron jobs.** List, remove every old Oya job (daily-review, old test
+**4. Bind the `oya` skill to your chat.** Hermes skills do **not** auto-trigger
+on message content — the user-facing `oya` skill must be pre-loaded on the
+chat, or the agent ignores it. Locate `config.yaml`:
+```
+docker exec oya-oya-1 sh -lc 'ls /opt/data/config.yaml ~/.hermes/config.yaml 2>/dev/null'
+```
+Edit it — add a `dm_topics` block under `platforms.telegram.extra`. `chat_id`
+is your Telegram numeric user ID (the same value as `oya.user.telegram_id`):
+```yaml
+platforms:
+  telegram:
+    extra:
+      dm_topics:
+        - chat_id: <your telegram id>
+          topics:
+            - name: Oya
+              skill: oya
+```
+Every new session in that topic now auto-loads the `oya` skill — so a plain
+"remind me…" or "done" is handled, no slash command needed.
+
+**5. Reset cron jobs.** List, remove every old Oya job (daily-review, old test
 jobs), then add the two ritual crons:
 ```
 docker compose run --rm oya hermes cron list
@@ -45,10 +66,10 @@ docker compose run --rm oya hermes cron add "0 8 * * *" "morning check sweep" \
   --skill morning-check --deliver telegram
 ```
 
-**5. Home channel** — already set via `/sethome`. Confirm the bot still
+**6. Home channel** — already set via `/sethome`. Confirm the bot still
 replies in that chat.
 
-**6. Restart once more** so the gateway loads the new crons:
+**7. Restart once more** so the gateway loads the new crons and the binding:
 ```
 docker compose restart
 docker logs --tail 30 oya-oya-1
