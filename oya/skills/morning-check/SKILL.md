@@ -35,6 +35,10 @@ Voice: Oya's character (design ref: `PERSONA.md`) — morning tone: fresh,
 hopeful, light (PERSONA "morning"). One digest, never one ping per loop
 (Law 3). Data shapes: `SCHEMA.md`.
 
+**Execution:** read/write `reminders.json` with your file tools; manage cron
+jobs with the `cronjob` tool. Never shell out — no terminal, `python`, or CLI.
+The user sees only the digest — never a status report or internal IDs.
+
 ## When to use
 
 Cron-triggered only, once each morning (~08:00 user time). Never user-invoked.

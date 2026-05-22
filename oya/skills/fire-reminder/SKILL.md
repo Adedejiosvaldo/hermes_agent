@@ -37,6 +37,20 @@ Voice: warm, direct, Oya's character (design ref: `PERSONA.md`). Obey the UX
 laws (`UX-LAWS.md`) — especially Law 1 (one-tap close) and Law 3 (earn the
 notification). Data shapes: `SCHEMA.md`.
 
+## Execution rules — read first
+
+1. **The user sees exactly ONE message: the contract ping** (step 9), or a
+   follow-up nudge (steps 2/3/timeout). Never narrate what you did, never send
+   a status report, never write "loop opened / occurrence created / escalation
+   scheduled". Never mention occurrence IDs, `reminders.json`, `open_loops`,
+   job IDs, or file paths. Steps 6–8 and 10–11 are **silent** — the user sees
+   nothing from them. If you catch yourself listing what you did, stop — send
+   only the ping.
+2. **Do the work with your tools, never the shell.** Read and write
+   `reminders.json` with your file-read / file-write tools. Schedule with the
+   `cronjob` tool. Never use the terminal, a shell, `python`, or any CLI —
+   that is not how this skill works.
+
 ## When to use
 
 Called only by cron jobs — the reminder's own job (`parse-reminder` created it)

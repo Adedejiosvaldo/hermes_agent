@@ -28,6 +28,10 @@ Voice: Oya's character (design ref: `PERSONA.md`) — evening tone: warm
 wind-down, honest report, never a lecture. Numbers canon: `GAMIFICATION.md`.
 Data shapes: `SCHEMA.md`.
 
+**Execution:** read/write `reminders.json` with your file tools; manage cron
+jobs with the `cronjob` tool. Never shell out — no terminal, `python`, or CLI.
+The user sees only the combined message — never a status report or internal IDs.
+
 ## Co-loaded skills — one message
 
 This skill runs on a cron that also loads **`streak-guard`** and
