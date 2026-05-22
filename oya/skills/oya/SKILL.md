@@ -105,8 +105,11 @@ Ask **one** focused question if the time is missing for a day-specific
 reminder, a weekday is ambiguous, or the action is unclear. Then wait.
 
 ### A4. Confirm (always, before scheduling)
-Send a plain-language confirmation and wait for ✅ / "yes" / "go":
-> "Got it: [frequency] at [time] — **'[what]'**. Tier [N]. Reply ✅ to confirm."
+Send a plain-language confirmation and wait for ✅ / "yes" / "go". State the
+**when** in natural words — never the raw schedule token, never the bare word
+"once":
+> "Got it — **'[what]'**, [when in plain words: "in 1 minute" / "tomorrow
+> 9am" / "every weekday at 8am"]. Tier [N]. Reply ✅ to confirm."
 
 ### A5. Schedule on confirmation
 1. **Schedule spec** — the exact string the `cronjob` tool accepts; nothing
@@ -188,17 +191,30 @@ the occurrence's `escalation_cron_id` job.
 Write `reminders.json` back.
 
 ### B4. Gamification (on DONE only)
-Mechanical — fixed numbers (`GAMIFICATION.md`):
-1. Base XP: `10` on time, `5` late → occurrence `xp_awarded`.
-2. Dice: send a Telegram dice 🎲 (`sendDice`), read the real `dice.value`.
-   Bonus `6 → +20`, `5 → +10`, `1–4 → +0`; add to `xp_awarded`. If Bot API is
-   unavailable, skip the dice, keep base XP.
-3. `gamification.xp += xp_awarded`.
-4. Level: `xp_threshold(L) = 50*L*(L-1)`. Set `level` = highest L with
-   `threshold(L) <= xp`; set `next_level_xp = threshold(level+1)`. If level
-   rose: `streak_freezes += 1` (cap 5) and flag a level-up.
-5. Milestone: if the new `streak` ∈ `{3,7,14,30,60,100}` → flag a milestone.
-6. Achievements: append any newly-earned badge (table in `GAMIFICATION.md`).
+
+**Use only real values from the file. Never invent, estimate, or round a
+number.** Read `user_model.gamification` from `reminders.json` first. Every
+number you compute — and every number in your reply — must trace to a value
+you actually read or wrote. If you did not read it from the file, do not say
+it.
+
+1. **Base XP** — `10` if done on time, `5` if done late. This is the
+   occurrence's `xp_awarded` before the dice.
+2. **Bonus roll** — pick a random number 1–6 yourself (Hermes cannot send a
+   real Telegram dice). Bonus: `6 → +20`, `5 → +10`, `1–4 → +0`. Add it to
+   `xp_awarded`. Narrate it in the reply as a roll — "🎲 rolled a 6 — +20
+   bonus!" — text only, no animation.
+3. **XP** — new total = (the `gamification.xp` value you read) + `xp_awarded`.
+   Write that exact number back.
+4. **Level** — `xp_threshold(L) = 50 * L * (L - 1)`. `level` = the highest L
+   with `xp_threshold(L) <= xp`. `next_level_xp = xp_threshold(level + 1)`.
+   If `level` rose: `streak_freezes += 1` (cap 5), flag a level-up.
+5. **Milestone** — if the reminder's new `streak` is `3, 7, 14, 30, 60` or
+   `100`, flag a milestone.
+6. **Achievements** — append any newly-earned badge (`GAMIFICATION.md` table).
+
+Write the updated `gamification` block back. The reply states the **real** XP
+gained and the **real** new streak — the values you just wrote, never a guess.
 
 ### B5. Reply
 Oya's voice, varied (no leaks):

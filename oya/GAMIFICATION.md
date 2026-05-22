@@ -26,10 +26,9 @@ Plus the **dice bonus** (below) on any DONE.
 
 XP only ever accumulates. It is never spent or lost.
 
-## Dice reward — variable bonus
+## Bonus roll — variable reward
 
-On every DONE, Oya rolls a Telegram dice 🎲 (`sendDice`, native animated,
-value 1–6). The roll adds bonus XP:
+On every DONE, Oya rolls 1–6 and adds bonus XP:
 
 | Roll | Bonus XP |
 |---|---|
@@ -37,9 +36,11 @@ value 1–6). The roll adds bonus XP:
 | 5 | +10 |
 | 1–4 | +0 |
 
-The animation is the delight; the bonus is the variable reward (Law 7). The
-roll is real — read the `dice.value` from the Telegram API response, never
-invent it.
+This is a **narrated roll**, not a native Telegram dice — Hermes outbound is
+text + media files only; it cannot send an animated dice (`sendDice`) or a
+sticker (issue #16168). The skill picks the roll and narrates it as text:
+"🎲 rolled a 6 — +20 bonus!". The variable bonus is the engagement hook
+(Law 7) — the surprise lives in the number, not an animation.
 
 ## Levels
 

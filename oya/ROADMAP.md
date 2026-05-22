@@ -169,7 +169,7 @@ in the P5 Mini App.
 | Emoji reactions (receive) | bonus ack, if Hermes routes it | A* |
 | MarkdownV2 + unicode emoji | all messages | A |
 | `MEDIA:` GIF / sticker | milestone fanfare | A |
-| `sendDice` 🎰 | variable reward | B |
+| narrated bonus roll | variable reward (text — no native dice) | A |
 | `editMessageText` | live counters, countdown | B |
 | `sendPoll` | non-ack only (vibe / weekly poll) | B |
 | Inline buttons / polls for ack | not used — callbacks don't route | — |
