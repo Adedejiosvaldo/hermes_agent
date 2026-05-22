@@ -46,7 +46,11 @@ metadata:
 - Forwarded URL + "read this Sunday" → `Read: [URL]`
 - "nag me about the MacBook installment" → `MacBook installment payment`
 
-**`when`** — first fire datetime in ISO 8601, resolved against NOW in `oya.user.timezone`. See time resolution table in Step 2.
+**`when`** — when the reminder first fires. Two forms — pick by phrasing:
+- **Relative** ("in N minutes/hours/days") → keep as a relative delay token: `5m`, `2h`, `1d`. Do NOT convert to a clock time. Hermes computes the fire moment from the system clock at schedule time — this is what prevents reminders landing in the past.
+- **Absolute** (a specific day/clock time — "tomorrow 9am", "Friday 3pm") → ISO 8601 datetime resolved against NOW in `oya.user.timezone`.
+
+See time resolution table in Step 2.
 
 **`recurrence`** — one of: `once | daily | weekday | weekend | weekly | monthly | custom`
 - "remind me tomorrow" → `once`
@@ -85,7 +89,7 @@ Apply strictly. When in doubt, ask — never guess on time-critical reminders.
 | "[weekday]" Mon–Thu, day is later this week | this week |
 | "[weekday]" and today is that day or it has passed this week | next week |
 | "[weekday]" and today is Fri/Sat/Sun | ASK — this week or next? |
-| "in N hours/minutes" | now + N |
+| "in N hours/minutes" | relative delay token (`Nm` / `Nh`) — never convert to a clock time |
 | "morning" without a time | ASK: "What time? I'll suggest 8am if that works." |
 | "afternoon" without a time | ASK: "2pm? 3pm?" |
 | "evening" without a time | ASK: "6pm? 8pm?" |
@@ -105,24 +109,29 @@ Ask ONE focused question if any of:
 
 One question per turn. Wait for the answer before continuing.
 
-### Step 4 — Generate ID and cron expression
+### Step 4 — Generate ID and schedule spec
 
 **ID format:** `rem_YYYYMMDD_HHMMSS_NNN`
-- YYYYMMDD = fire date of first occurrence
+- YYYYMMDD = fire date of first occurrence (for a relative delay, your best estimate — cosmetic only)
 - HHMMSS = fire time
 - NNN = zero-padded index = current length of `reminders` array in reminders.json
 
-**Cron expression** (6-field: sec min hour dom month dow):
+**Schedule spec** — the value handed to the `cronjob` tool. Choose by recurrence:
+
+*One-shot (`recurrence == once`)* — NOT a cron expression:
+- Relative request ("in N min/hours/days") → the relative delay token: `5m`, `2h`, `1d`. Hermes resolves it against the live system clock.
+- Absolute day/time → ISO 8601 timestamp: `2026-05-21T09:00:00`.
+
+*Recurring* — **5-field** cron (`min hour dom month dow` — no seconds field). Hermes cron does not accept a 6-field/seconds expression:
 
 | Recurrence | Cron pattern |
 |---|---|
-| once | `0 {min} {hour} {dom} {month} *` |
-| daily | `0 {min} {hour} * * *` |
-| weekday | `0 {min} {hour} * * MON-FRI` |
-| weekend | `0 {min} {hour} * * SAT,SUN` |
-| weekly (e.g. Friday) | `0 {min} {hour} * * FRI` |
-| monthly (1st) | `0 {min} {hour} 1 * *` |
-| monthly (15th) | `0 {min} {hour} 15 * *` |
+| daily | `{min} {hour} * * *` |
+| weekday | `{min} {hour} * * MON-FRI` |
+| weekend | `{min} {hour} * * SAT,SUN` |
+| weekly (e.g. Friday) | `{min} {hour} * * FRI` |
+| monthly (1st) | `{min} {hour} 1 * *` |
+| monthly (15th) | `{min} {hour} 15 * *` |
 
 ### Step 5 — Confirm with user
 
@@ -166,7 +175,7 @@ On confirmation:
      "created_via": "telegram",
      "source_text": "<original user message verbatim>",
      "what": "<extracted action>",
-     "schedule": "<6-field cron expression>",
+     "schedule": "<schedule spec: relative delay, ISO timestamp, or 5-field cron>",
      "recurrence": "<once|daily|weekday|weekend|weekly|monthly|custom>",
      "first_fire": "<ISO8601>",
      "end_date": "<ISO8601 or null>",
@@ -174,15 +183,17 @@ On confirmation:
      "delivery_channels": ["telegram"],
      "status": "active",
      "cron_job_id": null,
-     "pending_escalation_cron_id": null,
-     "history": []
+     "streak": 0,
+     "best_streak": 0,
+     "total_completions": 0,
+     "occurrences": []
    }
    ```
 
 3. **Write** the updated reminders.json.
 
 4. **Create the cron job** via the `cronjob` tool:
-   - Expression: the 6-field cron from Step 4
+   - Schedule: the schedule spec from Step 4 (relative delay, ISO timestamp, or 5-field cron)
    - Context message: `reminder_id: <id> step: 1`
    - Skill: `fire-reminder`
    - If `recurrence == "once"`: one-time job (single execution)
@@ -201,6 +212,7 @@ On confirmation:
 - **"Every day for N days"** — set `end_date`, not an open-ended recurrence.
 - **Pidgin time phrases** — "for evening", "by morning", "before night" are all ambiguous. Always ask.
 - **Voice transcription edge cases** — if the transcript looks garbled (repeated words, broken sentence), ask "Did I get this right: [what you parsed]?" before confirming.
+- **Output hygiene — never leak internals.** User-facing replies must never mention `reminders.json`, job IDs, `cron_job_id`, file paths, raw cron expressions, the `cronjob` tool, or any CLI/environment error text. On a tool failure say plainly "I couldn't set that reminder — want me to retry?" — never paste the raw error. The user sees the reminder, never the plumbing.
 
 ## Verification test cases
 
@@ -211,6 +223,6 @@ On confirmation:
 | "every day 6am for 30 days 20 pushups" | daily, 06:00, end_date +30d, tier 2 |
 | "abeg remind me say make I top up gen Friday evening" | ASK: what time Friday evening? |
 | "remind me Friday" (said on Sunday) | ASK: what time? also confirm this Friday or next? |
-| "remind me in 5 minutes" | once, now+5m, tier 1 |
+| "remind me in 5 minutes" | once, schedule spec `5m` (relative — not a clock time), tier 1 |
 | "nag me every Sunday to call dad" | weekly Sun, ASK for time, tier ≥ 2 |
 | "critical: remind me to take BP meds 8am daily" | daily 08:00, tier 3 |

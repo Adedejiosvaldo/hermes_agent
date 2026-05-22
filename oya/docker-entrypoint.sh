@@ -17,11 +17,25 @@ if [ ! -f "$DATA_DIR/reminders.json" ]; then
   cat > "$DATA_DIR/reminders.json" << 'EOF'
 {
   "reminders": [],
+  "open_loops": [],
   "user_model": {
     "timezone": "Africa/Lagos",
+    "location": null,
     "patterns": [],
     "preferences": {},
-    "last_reviewed": null
+    "last_reviewed": null,
+    "gamification": {
+      "xp": 0,
+      "level": 1,
+      "next_level_xp": 100,
+      "global_streak": 0,
+      "longest_streak": 0,
+      "last_active_date": null,
+      "streak_freezes": 2,
+      "achievements": [],
+      "daily_goal": 3,
+      "today": { "date": null, "completed": 0, "xp": 0 }
+    }
   }
 }
 EOF

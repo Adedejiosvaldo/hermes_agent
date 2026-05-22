@@ -36,6 +36,10 @@ run_setup hermes config set oya.user.timezone "Africa/Lagos"
 run_setup hermes config set oya.user.name "Joseph"
 run_setup hermes config set oya.default.tier 2
 
+echo "  What city are you in? (for weather briefs)"
+read -r OYA_CITY
+run_setup hermes config set oya.user.location "$OYA_CITY"
+
 echo "  Enter your Telegram numeric user ID:"
 read -r TELEGRAM_ID
 run_setup hermes config set oya.user.telegram_id "$TELEGRAM_ID"
@@ -47,8 +51,12 @@ echo "Step 4/5 — Voice transcription (local, free)"
 run_setup hermes config set stt.provider local
 
 echo ""
-echo "Step 5/5 — Schedule nightly review"
-run_setup hermes cron add "0 0 22 * * *" "run daily review" --skill daily-review
+echo "Step 5/5 — Schedule the daily rituals"
+# evening-review: nightly ritual — co-loads streak-guard (open-loop sweep) and
+# weather-brief; the three produce one combined message.
+run_setup hermes cron add "0 21 * * *" "evening review" --skill streak-guard --skill evening-review --skill weather-brief --deliver telegram
+# morning-check: resurface loops left open from previous days
+run_setup hermes cron add "0 8 * * *" "morning check sweep" --skill morning-check --deliver telegram
 
 echo ""
 echo "=== Optional extras (skip with Ctrl+C, configure later) ==="

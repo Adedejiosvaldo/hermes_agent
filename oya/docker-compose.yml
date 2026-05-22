@@ -9,6 +9,9 @@ services:
     environment:
       - HERMES_HOME=/opt/data
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      # Container clock + Hermes cron "local timezone". Absolute reminders
+      # ("9am tomorrow") and cron expressions are interpreted in this zone.
+      - TZ=Africa/Lagos
     # API server is off by default. Uncomment only if you need remote access,
     # and bind to 127.0.0.1 so it stays off the public internet.
     # ports:
